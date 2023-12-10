@@ -3,35 +3,43 @@ import controlP5.*;
 ControlP5 cp5;
 PFont myFont;
 
+//Initializing Variables, to make adjustments to button sizes simpler
 int buttonWidth = 200;
 int buttonHeight = 100;
 int nextButtonWidth = 100;
 int nextButtonHeight = 30;
+
+//Make boolean to clear screen after button, and sliders are selected
 boolean button1Pressed = false;
 boolean slidersVisible = false;
 boolean nextButtonPressed = false;
+boolean speedSliderClicked = false;
+boolean passengerSliderClicked = false;
 int passengers = 1;
 int speed = 60; // Default speed value
-boolean passengerSliderClicked = false;
-boolean Background = false;
-boolean speedSliderClicked = false;
+
+boolean Background = false; //Initializing the controlP5 background boolean
+
 
 void setup() {
   size(800, 600);
   textAlign(CENTER, CENTER);
   
-  myFont = createFont("Helvetica", 16);
+  //Importing font to make program easier to read for people with Dyslexia
+  myFont = createFont("Comic_Sanse", 16);
   
   //Setting up ControlP5
   cp5 = new ControlP5(this);
 
-  // Add a Toggle control
+  // Add a Toggle control, to adjust background for the colorblind
   cp5.addToggle("Background")
     .setPosition(width - 60, 20)
-    .setSize(40, 30)
+    .setSize(50, 20)
     .setColorLabel(0)
+    .setMode(ControlP5.SWITCH)
     .setColorBackground(0)
     .setValue(false);
+    
 }
 
 void draw() {
@@ -40,26 +48,26 @@ void draw() {
   if (Background) {
     background(255);  // White background
   } else {
-    background(200, 255, 200);  // Green background
+    background(200, 255, 200);  // Default background
   }
   // Draw title box
   fill(100, 100, 255); // Blue color
-  rect(10, 10, 180, 40);
+  rect(10, 10, 180, 40); //Background box
   
   // Draw title text
-  textFont(myFont);
+  textFont(myFont); //Using Comic Sanse font
   fill(0, 255, 0); // Green color
-  textSize(16);
+  textSize(16); //Adjusting size
   text("Emissions Calculator", 100, 30);
   
 
 
 
   if (!button1Pressed) {
-    // Draw Button 1 in the center of screen
-    fill(0,255,0);
+    // Draw Button in the center of screen
+    fill(0,255,0); //Making box Green
     rect(width / 2 - buttonWidth / 2, height / 2 - buttonHeight / 2, buttonWidth, buttonHeight);
-    fill(0);
+    fill(0); //Making text Black
     textSize(30);
     text("Start", width / 2, height / 2);
   }
@@ -77,7 +85,7 @@ void draw() {
     speed = (int) speedSlider(width / 4, height / 2 + 20, width / 2, 20, speed, 0, 120, " ");
     text("Speed: " + speed + " km/h", width / 2, height / 2 + 60);
 
-    // Draw Next button
+    // Draw Next button on second page
     fill(255);
     rect(width / 2 - nextButtonWidth / 2, height / 2 + 80, nextButtonWidth, nextButtonHeight);
     fill(0);
@@ -85,7 +93,7 @@ void draw() {
   }
 
   if (nextButtonPressed) {
-    // Calculate carbon emissions for petrol and diesel per 100 km
+    // Calling method to calculate carbon emissions for petrol and diesel based on speed
     float petrolEmission = calculatePetrolEmission(speed, passengers);
     float dieselEmission = calculateDieselEmission(speed, passengers);
 
@@ -93,7 +101,7 @@ void draw() {
     // Display the results
     fill(0);
     textSize(16);
-    text("Calculated Carbon Emissions are stated (per person)", width / 2, height / 2 - 80);
+    text("Calculated Carbon Emissions are stated (per person) per hour", width / 2, height / 2 - 80);
     text("Passenger Count: " + passengers, width / 2, height / 2);
     text("Speed: " + speed + " km/h", width / 2, height / 2 + 40);
     text("Petrol Emission: " + nf(petrolEmission, 0, 2) + " kg", width / 2, height / 2 + 80);
@@ -101,9 +109,11 @@ void draw() {
 
 
     // Calculating equivalence by equation y=121.6x, an equation calculated from U.S. Environmental Agency
-    float equivalenceCounter = 121.6 * dieselEmission;
+    float equivalenceCounter1 = 121.6 * dieselEmission;
+    float equivalenceCounter2 = 121.6 * petrolEmission;
     text("Equivalence example:", width / 2, height / 2 + 180);
-    text("Number of smartphones charged: " + int(equivalenceCounter), width / 2, height / 2 + 220);
+    text("Number of smartphones charged (diesel): " + int(equivalenceCounter1), width / 2, height / 2 + 220);
+    text("Number of smartphones charged (petrol): " + int(equivalenceCounter2), width / 2, height / 2 + 240);
   }
 }
 
@@ -112,8 +122,9 @@ void Background(boolean theFlag) {
   Background = theFlag;
 }
 
-void mouseClicked() {
-  // Check if Button 1 is pressed
+//Method following, is used to clear screen & record input after buttons are pressed
+void mouseClicked() {  
+  // Check if Button is pressed
   if (mouseX > width / 2 - buttonWidth / 2 && mouseX < width / 2 + buttonWidth / 2 &&
       mouseY > height / 2 - buttonHeight / 2 && mouseY < height / 2 + buttonHeight / 2) {
     clearScreen();
@@ -145,14 +156,15 @@ void clearScreen() {
   slidersVisible = false; // Reset slidersVisible
 }
 
+//Creating passenger slider
 float passengerSlider(float x, float y, float w, float h, float val, float minVal, float maxVal, String label) {
   fill(250);
   rect(x, y, w, h);
 
   if (passengerSliderClicked) {
-    fill(100, 100, 255); // Highlight the slider when clicked
+    fill(100, 255, 100); // Highlight the slider when clicked
   } else {
-    fill(250);
+    fill(255,0,0);
   }
 
   float sliderX = map(val, minVal, maxVal, x, x + w - 10);
@@ -175,9 +187,9 @@ float speedSlider(float x, float y, float w, float h, float val, float minVal, f
   rect(x, y, w, h);
 
   if (speedSliderClicked) {
-    fill(100, 100, 255); // Highlight the slider when clicked
+    fill(100, 255, 100); // Highlight the slider when clicked
   } else {
-    fill(250);
+    fill(255,0,0);
   }
 
   float sliderX = map(val, minVal, maxVal, x, x + w - 10);
@@ -195,7 +207,7 @@ float speedSlider(float x, float y, float w, float h, float val, float minVal, f
   return val; // If not inside the slider area or slider is not clicked, return the current value
 }
 
-
+//Values the program uses to calculate the emissions per passenger, based on values I previously calculated (consumption per kmh multiplied by the speed travelling at)
 float calculatePetrolEmission(int userSpeed, int userPassengers) {
   float[] emissionValues = {29.9, 21.85, 17.825, 15.64, 14.26, 13.8, 13.8, 14, 14.49, 15.41, 15.87, 16.33};
   int index = int(map(userSpeed, 10, 120, 0, emissionValues.length - 1));
